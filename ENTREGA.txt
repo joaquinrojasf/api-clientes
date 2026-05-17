@@ -1,0 +1,143 @@
+=====================================================================
+            DOCUMENTO DE ENTREGA - ACTIVIDAD SUMATIVA
+                      SEMANA 9 - FORMA A
+=====================================================================
+
+Asignatura  : CIB302 - Taller de Plataformas Web
+Unidad 3    : Introduccion a los sistemas de bases de datos
+Modalidad   : Individual
+Tipo        : Actividad Practica Sumativa
+
+---------------------------------------------------------------------
+DATOS DEL ESTUDIANTE
+---------------------------------------------------------------------
+
+Nombre completo    : [COMPLETAR]
+RUT                : [COMPLETAR]
+Carrera            : [COMPLETAR]
+Seccion            : [COMPLETAR]
+Docente            : [COMPLETAR]
+Fecha de entrega   : [COMPLETAR]
+
+
+=====================================================================
+                      ENLACES DE LA ENTREGA
+=====================================================================
+
+>>> REPOSITORIO GitHub:
+[PEGAR AQUI EL LINK DE TU REPOSITORIO PUBLICO]
+
+Ejemplo: https://github.com/tu_usuario/api-clientes
+
+
+>>> VIDEO EXPLICATIVO (maximo 3 minutos):
+[PEGAR AQUI EL LINK DE TU VIDEO]
+
+Ejemplo: https://drive.google.com/file/d/XXXXXXXXXX/view
+         https://www.youtube.com/watch?v=XXXXXXXXX  (no listado)
+
+
+=====================================================================
+                  DESCRIPCION TECNICA DE LA SOLUCION
+=====================================================================
+
+Se desarrollo una API REST con Node.js y Express conectada a una
+base de datos MySQL, que implementa operaciones CRUD completas
+sobre la entidad "cliente" definida en el modelo de datos entregado.
+
+
+TECNOLOGIAS UTILIZADAS
+----------------------
+  - Node.js 18+              (runtime)
+  - Express 4                (framework web)
+  - MySQL 8                  (base de datos relacional)
+  - mysql2/promise           (driver con prepared statements)
+  - express-validator        (validacion de entradas)
+  - helmet                   (cabeceras HTTP seguras)
+  - cors                     (control de origenes cruzados)
+  - express-rate-limit       (proteccion contra fuerza bruta / DoS)
+  - morgan                   (logging de peticiones)
+  - dotenv                   (variables de entorno)
+
+
+ARQUITECTURA POR CAPAS
+----------------------
+  Routes        -> definicion de rutas y orquestacion
+  Validators    -> validacion de entradas
+  Controllers   -> logica HTTP
+  Models        -> acceso a datos (consultas parametrizadas)
+  Middlewares   -> manejo central de errores y 404
+  Utils         -> clase ApiError y asyncHandler
+
+
+MEDIDAS DE SEGURIDAD APLICADAS
+------------------------------
+  1. Prevencion de inyeccion SQL
+     Todas las consultas usan prepared statements (parametros con
+     simbolo '?'), nunca concatenacion de strings.
+
+  2. Validacion estricta de entradas
+     express-validator valida tipo, formato, longitud y caracteres
+     antes de llegar a la base de datos. Devuelve 400 con detalles.
+
+  3. Restriccion UNIQUE en la columna email
+     Garantia a nivel de motor de BD: el correo no puede duplicarse.
+     La API responde 409 Conflict de forma controlada.
+
+  4. Cabeceras HTTP seguras (helmet)
+     Activa X-Frame-Options, Content-Security-Policy,
+     X-Content-Type-Options y otras.
+
+  5. Rate limiting
+     Limita a 100 peticiones por IP cada 15 minutos.
+
+  6. CORS controlado
+     Configurable mediante .env.
+
+  7. Variables sensibles fuera del repositorio
+     Las credenciales viven en .env, excluido por .gitignore.
+
+  8. Limite de payload (10 KB)
+     Evita peticiones maliciosas con cuerpos enormes.
+
+
+CODIGOS HTTP MANEJADOS
+----------------------
+  200  OK                    -> Operacion exitosa
+  201  Created               -> Cliente creado
+  400  Bad Request           -> Datos invalidos
+  404  Not Found             -> Cliente o ruta no existe
+  409  Conflict              -> Email duplicado
+  429  Too Many Requests     -> Excedio el rate limit
+  500  Internal Server Error -> Error inesperado del servidor
+  503  Service Unavailable   -> Base de datos no disponible
+
+
+PRUEBAS CON POSTMAN
+-------------------
+Se incluye en el repositorio la coleccion de Postman:
+  postman/ClientesAPI.postman_collection.json
+
+Contiene 12 pruebas que cubren todos los casos:
+  - Listar todos (200)
+  - Obtener por ID (200, 400, 404)
+  - Crear (201, 400, 409)
+  - Actualizar (200, 404)
+  - Eliminar (200, 404)
+
+Cada prueba incluye scripts de validacion automatica de la
+respuesta y el codigo HTTP esperado.
+
+
+=====================================================================
+                         CHECKLIST FINAL
+=====================================================================
+  [ ]  El repositorio GitHub es PUBLICO
+  [ ]  El repositorio incluye README.md con instrucciones claras
+  [ ]  El repositorio incluye la coleccion de Postman .json
+  [ ]  El archivo .env NO esta subido al repositorio
+  [ ]  El video dura 3 minutos o menos
+  [ ]  El video explica un problema tecnico detectado y su solucion
+  [ ]  El enlace del video es ACCESIBLE para el evaluador
+  [ ]  Este documento esta dentro del archivo comprimido (ZIP o RAR)
+=====================================================================

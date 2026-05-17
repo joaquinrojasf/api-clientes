@@ -1,0 +1,369 @@
+{
+  "info": {
+    "_postman_id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "name": "API Clientes - CIB302",
+    "description": "Coleccion completa de pruebas para la API REST de Clientes.\nAsignatura: CIB302 Taller de Plataformas Web - AIEP.\n\nIncluye pruebas exitosas y de error para todos los endpoints CRUD.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "GET - Listar todos los clientes (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 200', () => pm.response.to.have.status(200));",
+              "pm.test('Respuesta tiene success=true', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.success).to.eql(true);",
+              "  pm.expect(json.data).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes"]
+        },
+        "description": "Devuelve la lista completa de clientes registrados."
+      }
+    },
+    {
+      "name": "GET - Obtener cliente por ID (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 200', () => pm.response.to.have.status(200));",
+              "pm.test('Cliente tiene los campos correctos', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.data).to.have.property('id_cliente');",
+              "  pm.expect(json.data).to.have.property('nombre');",
+              "  pm.expect(json.data).to.have.property('email');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "1"]
+        },
+        "description": "Obtiene el cliente con id_cliente = 1."
+      }
+    },
+    {
+      "name": "GET - Cliente inexistente (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/9999",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "9999"]
+        },
+        "description": "Debe responder 404 porque el cliente no existe."
+      }
+    },
+    {
+      "name": "GET - ID invalido (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/abc",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "abc"]
+        },
+        "description": "Debe responder 400 porque el ID no es un entero."
+      }
+    },
+    {
+      "name": "POST - Crear cliente (201)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 201', () => pm.response.to.have.status(201));",
+              "pm.test('Devuelve el cliente creado', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.data.email).to.eql('ana.lopez@ejemplo.cl');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Ana Lopez\",\n  \"email\": \"ana.lopez@ejemplo.cl\",\n  \"telefono\": \"+56911223344\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes"]
+        },
+        "description": "Crea un nuevo cliente. Devuelve 201 con el registro creado."
+      }
+    },
+    {
+      "name": "POST - Email duplicado (409)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 409', () => pm.response.to.have.status(409));",
+              "pm.test('Mensaje indica conflicto', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.success).to.eql(false);",
+              "  pm.expect(json.error).to.eql('Conflict');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Otra Persona\",\n  \"email\": \"ana.lopez@ejemplo.cl\",\n  \"telefono\": \"+56999999999\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes"]
+        },
+        "description": "Debe responder 409 Conflict porque el correo ya existe."
+      }
+    },
+    {
+      "name": "POST - Datos invalidos (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 400', () => pm.response.to.have.status(400));",
+              "pm.test('Devuelve detalles del error', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.detalles).to.be.an('array');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"X\",\n  \"email\": \"correo-invalido\",\n  \"telefono\": \"abc\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes"]
+        },
+        "description": "Debe responder 400 por nombre corto, email invalido y telefono con letras."
+      }
+    },
+    {
+      "name": "POST - Cuerpo vacio (400)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes"]
+        },
+        "description": "Debe responder 400 porque faltan los campos obligatorios."
+      }
+    },
+    {
+      "name": "PUT - Actualizar cliente (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 200', () => pm.response.to.have.status(200));",
+              "pm.test('Cliente actualizado correctamente', () => {",
+              "  const json = pm.response.json();",
+              "  pm.expect(json.data.telefono).to.eql('+56988887777');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Juan Perez Actualizado\",\n  \"email\": \"juan.perez@ejemplo.cl\",\n  \"telefono\": \"+56988887777\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/1",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "1"]
+        },
+        "description": "Actualiza el cliente con id_cliente = 1."
+      }
+    },
+    {
+      "name": "PUT - Cliente inexistente (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombre\": \"Test\",\n  \"email\": \"test@ejemplo.cl\",\n  \"telefono\": \"+56900000000\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/9999",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "9999"]
+        },
+        "description": "Debe responder 404 porque el cliente no existe."
+      }
+    },
+    {
+      "name": "DELETE - Eliminar cliente (200)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/5",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "5"]
+        },
+        "description": "Elimina el cliente con id_cliente = 5."
+      }
+    },
+    {
+      "name": "DELETE - Cliente inexistente (404)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status code es 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/api/clientes/9999",
+          "host": ["{{baseUrl}}"],
+          "path": ["api", "clientes", "9999"]
+        },
+        "description": "Debe responder 404 porque el cliente no existe."
+      }
+    }
+  ]
+}
